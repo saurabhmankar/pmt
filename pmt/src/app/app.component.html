@@ -1,0 +1,127 @@
+<div class="toolbar" role="banner">
+  <img width="40" alt="Angular Logo"
+    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==" />
+  <span>Welcome to PMT developed by Saurabh</span>
+  <div class="spacer"></div>
+  <a aria-label="Angular on twitter" target="_blank" rel="noopener" href="https://twitter.com/angular" title="Twitter">
+
+
+  </a>
+</div>
+
+<div class="content" role="main">
+  <button class="btn btn-info float-right" (click)="addTaskOpen()">Add Tasks</button>
+  <h2>Task Listing</h2>
+
+  <input type="hidden" #selection>
+
+
+
+
+
+
+
+</div>
+
+<!-- add task form p-dialog -->
+<p-dialog header="Add Task" [(visible)]="displayAddTask" [dismissableMask]="true" [closable]="true"
+  [closeOnEscape]="true" [resizable]="true" [position]="top" [style]="{width: '50vw'}" [baseZIndex]="10000">
+  <div class="container">
+    <div class="row">
+      <div class="col-10">
+        <div class="jumbotron">
+          <form name="TaskForm" [formGroup]="TaskForm" (ngSubmit)="TaskForm.valid && onSubmitTask()">
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input type="text" class="form-control" formControlName="title"
+                [ngClass]="{'is-invalid':TaskForm.get('title').touched && TaskForm.get('title').invalid}" required />
+              <div class="invalid-feedback">
+                <div>title is required</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" formControlName="description"
+                [ngClass]="{'is-invalid':TaskForm.get('description').touched && TaskForm.get('description').invalid}"
+                required />
+              <div class="invalid-feedback">
+                <div>description is required</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="due_date">Due Date</label>
+              <input type="date" class="form-control" formControlName="due_date"
+                [ngClass]="{'is-invalid':TaskForm.get('due_date').touched && TaskForm.get('due_date').invalid}"
+                required />
+              <div class="invalid-feedback">
+                <div>due is required</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary" [disabled]="!TaskForm.valid">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</p-dialog>
+
+
+<div class="row">
+  <div class="column">
+    <h1>Backlog</h1>
+    <p *ngIf="!backlogTask.length">No backlog Task Found</p>
+    <ul class="list-group" *ngFor="let btask of backlogTask" pDraggable="btask" (onDragStart)="dragStart($event,btask)"
+      (onDragEnd)="dragEnd($event)">
+      <li class="list-group-item">
+        <h3 class="card-header">Title:{{btask.title}}</h3>
+        <p class="card-body">Description:{{btask.description}}</p>
+        <p class="card-footer">Due Date:{{btask.due_date}}</p>
+      </li>
+    </ul>
+  </div>
+  <div class="column" pDroppable="btask" (onDrop)="droptodev($event)">
+    <h1>Developement</h1>
+    <p *ngIf="!devTask.length">No Developement Task Found</p>
+    <ul class="list-group" *ngFor="let dtask of devTask" pDraggable="dtask" (onDragStart)="dragStart($event,dtask)"
+      (onDragEnd)="dragEnd($event)">
+      <li class="list-group-item">
+        <h3 class="card-header">Title:{{dtask.title}}</h3>
+        <p class="card-body">Description:{{dtask.description}}</p>
+        <p class="card-footer">Due Date:{{dtask.due_date}}</p>
+      </li>
+
+    </ul>
+  </div>
+  <div class="column" pDroppable="dtask" (onDrop)="droptocode($event)">
+    <h1>Code Review</h1>
+    <p *ngIf="!coderevTask.length">No task found for code review</p>
+    <ul class="list-group" *ngFor="let ctask of coderevTask" pDraggable="ctask" (onDragStart)="dragStart($event,ctask)"
+      (onDragEnd)="dragEnd($event)">
+      <li class="list-group-item">
+        <h3 class="card-header">Title:{{ctask.title}}</h3>
+        <p class="card-body">Description:{{ctask.description}}</p>
+        <p class="card-footer">Due Date:{{ctask.due_date}}</p>
+      </li>
+
+    </ul>
+  </div>
+  <div class="column" pDroppable="ctask" (onDrop)="droptoaccept($event)">
+    <h1>Acceptance</h1>
+    <p *ngIf="!acceptTask.length">No task found</p>
+    <ul class="list-group" *ngFor="let atask of acceptTask">
+      <li class="list-group-item acceptbg">
+        <h3 class="card-header">Title:{{atask.title}}</h3>
+        <p class="card-body">Description:{{atask.description}}</p>
+        <p class="card-footer">Due Date:{{atask.due_date}}</p>
+      </li>
+
+    </ul>
+  </div>
+</div>
+
+<p-toast position="top-right"></p-toast>
+
+<router-outlet></router-outlet>
